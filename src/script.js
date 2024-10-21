@@ -2,12 +2,14 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
-console.log(RectAreaLightHelper)
+
 /**
  * Base
  */
-// Debug
+// Debug lil GUI
 const gui = new GUI()
+const ambientLightFolder = gui.addFolder('Ambient Light').close()
+const directionalLightFolder = gui.addFolder('Directional Light').close()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -18,14 +20,28 @@ const scene = new THREE.Scene()
 /**
  * Lights
  */
+// Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1)
+// ambientLight.Color = new THREE.Color()
+// ambientLight.Intensity = 1
 scene.add(ambientLight)
 
-gui.add(ambientLight, 'intensity').min(0).max(2).step(0.01)
+// GUI for Ambient Light
+ambientLightFolder.addColor(ambientLight, 'color')
+ambientLightFolder.add(ambientLight, 'intensity').min(0).max(2).step(0.01)
 
-const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.9)
+// Directional Light
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 2)
 directionalLight.position.set(1, 0.25, 0)
 scene.add(directionalLight)
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2)
+scene.add(directionalLightHelper)
+
+// GUI for Directional Light
+directionalLightFolder.add(directionalLightHelper, 'visible').name('Helper Visible')
+directionalLightFolder.addColor(directionalLight, 'color')
+directionalLightFolder.add(directionalLight, 'intensity').min(0).max(2).step(0.01)
+
 
 const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9)
 scene.add(hemisphereLight)
@@ -49,9 +65,6 @@ scene.add(spotLight.target)
 // Helpers
 const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 0.2)
 scene.add(hemisphereLightHelper)
-
-const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2)
-scene.add(directionalLightHelper)
 
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
 scene.add(pointLightHelper)
